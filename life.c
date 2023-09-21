@@ -10,8 +10,7 @@
 
 #include <life.h>
 
-#define VBYTE_SIZE  8  /* This value MAY NOT be changed without adding or
-                        * removing elements from the vbyte structure!     */
+#define VBYTE_SIZE  8  /* Size of a vbyte. Make sure the struct agrees! */
 #define NEIGHBORS_ON_GRID 8
 #define FAILURE    -1  
 
@@ -48,9 +47,8 @@ static struct vbit {
 	unsigned char vbitaddr;
 }
 
-static struct vbyte *field, *fieldbuffer;  /* The game board stored as a 
-																						* group of vbytes            */          	
-static int vbytec;           /* Number of vbytes in field */
+static struct vbyte *field, *fieldbuffer; /* The game board stored as vbytes */          	
+static int vbytec;                        /* Number of vbytes in field */
 static int rowc, columnc, spacec;
 static bool initialized = false;     
 
