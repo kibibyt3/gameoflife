@@ -5,7 +5,7 @@
  * ensure lexit is called whenever the game is finished. Use the structure
  * square to interface with the module. Call ltick() to make a tick pass in
  * the game. To interface with specific squares, call squareisalive() or
- * setsquare(). Depends on stdbool.h, assert.h, and stdint.h.
+ * setsquare().
  */
 
 
