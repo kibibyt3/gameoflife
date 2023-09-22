@@ -18,10 +18,10 @@
 #define DEAD  false
 #define ALIVE true
 
-typedef struct square {
+struct square {
 	int y;
 	int x;
-} square;
+};
 
 /* 
  * Virtual byte to aid memory usage while sidestepping common machine
@@ -89,7 +89,7 @@ linit(int rows, int columns) {
  * accordingly. Modifies field.
  */
 int
-tick() {
+ltick() {
 	static square activesquare = {0, 0};
 	
 	if ((fieldbuffer = calloc((size_t) vbytec, sizeof(vbyte))) == NULL){
