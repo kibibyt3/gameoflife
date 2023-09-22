@@ -18,7 +18,7 @@
 #define DEAD  false
 #define ALIVE true
 
-struct square {
+struct square_t {
 	int y;
 	int x;
 };
@@ -90,7 +90,7 @@ linit(int rows, int columns) {
  */
 int
 ltick() {
-	static square activesquare = {0, 0};
+	static square_t activesquare = {0, 0};
 	
 	if ((fieldbuffer = calloc((size_t) vbytec, sizeof(vbyte))) == NULL){
 		return FAILURE;
@@ -113,7 +113,7 @@ ltick() {
 					return FAILURE;		
 				}
 			}
-			else if ((getsquare(activesquare) == ALIVE) && activeneighbors == 2){
+			else if ((squareisalive(activesquare) == ALIVE) && activeneighbors == 2){
 				if (setsquare(activesquare, ALIVE) == FAILURE){
 					return FAILURE;
 				}
@@ -138,13 +138,29 @@ lexit(){
 }
 
 /*
+ * True if square is alive, false otherwise.
+ */
+bool
+squareisalive(square_t givensquare){
+	return getfieldbit(squaretovbit(givensquare));
+}
+
+/*
+ * Returns SUCCESS when executed successfully; FAILURE otherwise.
+ */
+int
+setsquare(square_t sentsquare, bool value){
+	return setfieldbufferbit((squaretovbit(givensquare)), value);
+}
+
+/*
  * Returns the amount of living neighbors for a given square. Returns SUCCESS
  * when it terminates successfully; FAILURE otherwise.
  */
 static int
-getactiveneighbors(square givensquare){
+getactiveneighbors(square_t givensquare){
 	activeneighbors = 0;
-	static square attemptsquare;
+	static square_t attemptsquare;
 	
 	for (int i = 0; i < NEIGHBORS_ON_GRID; i++) {
 		attemptsquare.x = givensquare.x;
@@ -189,21 +205,6 @@ getactiveneighbors(square givensquare){
 	return activeneighbors;
 }
 
-/*
- * True if square is alive, false otherwise.
- */
-static bool
-squareisactive(square givensquare){
-	return getfieldbit(squaretovbit(givensquare));
-}
-
-/*
- * Returns SUCCESS when executed successfully; FAILURE otherwise.
- */
-static int
-setsquare(square sentsquare, bool value){
-	return setfieldbufferbit((squaretovbit(givensquare)), value);
-}
 
 /*
  * Returns true if a given bit that belongs to field is set to true; false if
@@ -291,7 +292,7 @@ setfieldbufferbit(struct vbit vbitref, bool value) {
  * Converts argument sentsquare to vbit format and returns the vbit.
  */
 static struct vbit
-squaretovbit(square sentsquare) {
+squaretovbit(square_t sentsquare) {
 	int space;
   struct vbit requestedvbit;
 
@@ -313,7 +314,7 @@ squaretovbit(square sentsquare) {
 static square
 vbittosquare(struct vbit sentvbit) {
 	int absaddr;
-	square requestedsquare;
+	square_t requestedsquare;
 
 	/* Validate inputs */
 	assert(sentvbit.vbyteaddr >= 0 && sentvbit.vbyteaddr <  vbytec);
@@ -342,11 +343,11 @@ needsevb(int spaces) {
  * Returns true if a given square exists in memory; false otherwise.
  */
 struct bool
-squareexists(square sentsquare){
-	if (square.x < 0 || square.x >= columnc){
+squareexists(square_t sentsquare){
+	if (sentsquare.x < 0 || sentsquare.x >= columnc){
 		return false;
 	}
-	if (square.y < 0 || square.y >= linec){
+	if (sentsquare.y < 0 || sentsquare.y >= linec){
 		return false;
 	}
 	return true;

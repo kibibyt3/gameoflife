@@ -4,11 +4,15 @@
  * linit() to initialize the game. Call this before any other function and
  * ensure lexit is called whenever the game is finished. Use the structure
  * square to interface with the module. Call ltick() to make a tick pass in
- * the game.
+ * the game. To interface with specific squares, call squareisalive() or
+ * setsquare(). Depends on stdbool.h, assert.h, and stdint.h.
  */
 
-typedef struct square square;
+
+typedef struct square_t square_t;
 
 extern int linit(int, int);
 extern int lexit();
 extern int ltick();
+extern bool squareisalive(square_t);
+extern int setsquare(square_t, bool);
