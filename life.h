@@ -8,11 +8,28 @@
  * setsquare().
  */
 
+#define L_FAILURE -1
+#define L_SUCCESS  0
 
-typedef struct square_t square_t;
+/*
+ * Struct to handle in-game squares from an line/column perspective
+ */
+typedef struct square_t {
+	int y;
+	int x;	
+} square_t;
 
-extern int linit(int, int);
-extern int lexit();
-extern int ltick();
-extern bool squareisalive(square_t);
-extern int setsquare(square_t, bool);
+/*
+ * Struct to talk about a given cell, meaning a square with an associated
+ * alive/dead value.
+ */
+typedef struct cell_t {
+	square_t square;
+	bool     isalive;
+}cell_t;
+
+extern int  linit(int, int);           /* Initializes the game */
+extern int  lexit();                   /* Exits the game */
+extern int  ltick();                   /* Causes an in-game tick to pass */
+extern bool squareisalive(square_t);   /* Returns whether a square is alive */
+extern int  setsquare(square_t, bool); /* Sets an in-game square to a value */

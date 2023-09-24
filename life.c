@@ -8,21 +8,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 #include "life.h"
 
 #define VBYTE_SIZE         8   /* Size of a vbyte. Struct must aggree. */
 #define NEIGHBORS_ON_GRID  8   /* Orthogonal/diagonal neighbors of square */
-#define FAILURE           -1  
-#define SUCCESS            0
 
 #define DEAD  false
 #define ALIVE true
-
-struct square_t {
-	int y;
-	int x;
-};
 
 /* 
  * Virtual byte to aid memory usage while sidestepping common machine
@@ -49,7 +43,7 @@ struct vbit {
 	int vbitaddr;
 };
 
-static struct vbyte /*@reldef@*/*field, *fieldbuffer; /* vbyte game board */          	
+static struct vbyte *field, *fieldbuffer; /* vbyte game board */          	
 static int vbytec;                        /* Number of vbytes in field */
 static int rowc, columnc, spacec;
 static bool initialized = false;     
@@ -95,12 +89,12 @@ linit(int rows, int columns) {
 	}
 
 	/* Make sure memory gets allocated. */
-	if ((field = (vbyte *)calloc((size_t) vbytec, sizeof(struct vbyte))) == NULL){
-		return FAILURE;
+	if ((field = (struct vbyte *) calloc((size_t) vbytec, sizeof(struct vbyte))) == NULL){
+		return L_FAILURE;
 	}
 
 	initialized = true;
-	return SUCCESS;
+	return L_SUCCESS;
 }
 
 /*
@@ -111,8 +105,8 @@ int
 ltick() {
 	square_t activesquare = {0, 0};
 	
-	if ((fieldbuffer = (vbyte *)calloc((size_t) vbytec, sizeof(struct vbyte))) == NULL){
-		return FAILURE;
+	if ((fieldbuffer = (struct vbyte *) calloc((size_t) vbytec, sizeof(struct vbyte))) == NULL){
+		return L_FAILURE;
 	}
 
 	int activeneighbors = 0;
@@ -123,37 +117,37 @@ ltick() {
 		while(activesquare.x++ < rowc) {
 			activeneighbors = getactiveneighbors(activesquare);
 			if (activeneighbors < 2 || activeneighbors > 3){
-				if (setsquare(activesquare, DEAD) == FAILURE){
-					return FAILURE;	
+				if (setsquare(activesquare, DEAD) == L_FAILURE){
+					return L_FAILURE;	
 				}
 			}
 			else if (activeneighbors == 3){
-				if (setsquare(activesquare, ALIVE) == FAILURE){
-					return FAILURE;		
+				if (setsquare(activesquare, ALIVE) == L_FAILURE){
+					return L_FAILURE;		
 				}
 			}
 			else if ((squareisalive(activesquare) == ALIVE) && activeneighbors == 2){
-				if (setsquare(activesquare, ALIVE) == FAILURE){
-					return FAILURE;
+				if (setsquare(activesquare, ALIVE) == L_FAILURE){
+					return L_FAILURE;
 				}
 			}
 		}
 	}
 	memcpy(field, fieldbuffer, ((size_t) vbytec * sizeof(struct vbyte)));
 	free(fieldbuffer);
-	return SUCCESS;
+	return L_SUCCESS;
 }
 
 
 /*
  * Safely exits the game of life. Frees memory allocated to field.
- * Returns SUCCESS if lexit terminates normally. Returns FAILURE otherwise.
+ * Returns L_SUCCESS if lexit terminates normally. Returns L_FAILURE otherwise.
  */
 int
 lexit(){
 	assert(initialized == true);
 	free(field);
-	return SUCCESS;
+	return L_SUCCESS;
 }
 
 /*
@@ -165,7 +159,7 @@ squareisalive(square_t givensquare){
 }
 
 /*
- * Returns SUCCESS when executed successfully; FAILURE otherwise.
+ * Returns L_SUCCESS when executed successfully; L_FAILURE otherwise.
  */
 int
 setsquare(square_t sentsquare, bool value){
@@ -173,8 +167,8 @@ setsquare(square_t sentsquare, bool value){
 }
 
 /*
- * Returns the amount of living neighbors for a given square. Returns SUCCESS
- * when it terminates successfully; FAILURE otherwise.
+ * Returns the amount of living neighbors for a given square. Returns L_SUCCESS
+ * when it terminates successfully; L_FAILURE otherwise.
  */
 int
 getactiveneighbors(square_t givensquare){
@@ -248,13 +242,14 @@ getfieldbit(struct vbit vbitref) {
 	case 7:	return field[vbitref.vbyteaddr].b8;
 	
 	default:
+		fprintf(stderr, "Error: vbit address out of range!");
 		exit(EXIT_FAILURE);	
 	}
 }
 
 /*
- * Sets a given vbit to the argument value. Returns SUCCESS when executed
- * successfully; FAILURE otherwise.
+ * Sets a given vbit to the argument value. Returns L_SUCCESS when executed
+ * successfully; L_FAILURE otherwise.
  */
 int
 setfieldbit(struct vbit vbitref, bool value) {
@@ -275,14 +270,14 @@ setfieldbit(struct vbit vbitref, bool value) {
 	case 7:	field[vbitref.vbyteaddr].b8 = value; break;
 
 	default:
-		return FAILURE;	
+		return L_FAILURE;	
 	}
-	return SUCCESS;
+	return L_SUCCESS;
 }
 
 /*
- * Sets the bit given by argument vbitref to argument value. Returns SUCCESS
- * when successfully set; FAILURE otherwise.
+ * Sets the bit given by argument vbitref to argument value. Returns L_SUCCESS
+ * when successfully set; L_FAILURE otherwise.
  */
 int
 setfieldbufferbit(struct vbit vbitref, bool value) {
@@ -303,9 +298,9 @@ setfieldbufferbit(struct vbit vbitref, bool value) {
 	case 7:	fieldbuffer[vbitref.vbyteaddr].b8 = value; break;
 
 	default:
-		return FAILURE;	
+		return L_FAILURE;	
 	}
-	return SUCCESS;
+	return L_SUCCESS;
 }
 
 /*
