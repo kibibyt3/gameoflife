@@ -46,23 +46,23 @@ io_screen_end() {
 /*
  * Acquires a square given by the user via the arrow keys or WASD. Pressing
  * enter or the spacebar causes the function to return the square the user
- * is sitting on. May abort.
+ * is on, or a square with its x component equal to PAUSE if the player
+ * presses PAUSE_BUTTON, or QUIT if the player presses QUIT_BUTTON. May abort.
  */
 square_t
-io_user_square_get() {
+io_user_square_get(int y, int x) {
 	assert(screen_isactive == true);
 	
 	assert(curs_set(1) != ERR); /* Make user cursor visible */
 	assert(cbreak() != ERR);    /* Temporarily leave halfdelay mode */
 	
 	int ch;
-	int y, x;
 
-	y = 0;
-	x = 0;
 	move(y, x);
 	while ((ch = getch()) != KEY_ENTER){
 		if (ch == ' '){break;}
+		if (ch == PAUSE_BUTTON){break;}
+		if (ch == QUIT_BUTTON){break;}
 		switch (ch) {
 		case 'w': /* FALLTHROUGH */
 		case KEY_UP:
@@ -95,8 +95,13 @@ io_user_square_get() {
 
 	/* Return to how we were before */
 	assert(curs_set(0) != ERR);
-	assert(cbreak() != ERR);
+	assert(halfdelay(1) != ERR);
 
+	if (ch == PAUSE_BUTTON){
+		user_square.x = PAUSE;
+	} else if (ch == QUIT_BUTTON){
+		user_square.x = QUIT;
+	}
 	return user_square;
 }
 
@@ -108,10 +113,10 @@ int
 io_game_cell_set(cell_t cell) {
 	assert(screen_isactive == true);
 	if (cell.isalive) {
-		assert((mvaddch(cell.square.y, cell.square.x, (chtype) CHARACTER_ALIVE) != ERR));
+		assert((mvaddch(cell.square.y, cell.square.x, (chtype) CHARACTER_ALIVE) != ERR) || ((cell.square.y == LINES - 1) && (cell.square.x == COLS - 1))); /* mvaddch() returns an error for a failure to line-wrap. */
 	}
 	else {
-		assert((mvaddch(cell.square.y, cell.square.x, (chtype) CHARACTER_DEAD) != ERR));
+		assert((mvaddch(cell.square.y, cell.square.x, (chtype) CHARACTER_DEAD) != ERR) || ((cell.square.y == LINES - 1) && (cell.square.x == COLS - 1)));
 	}
 	return L_SUCCESS;
 }

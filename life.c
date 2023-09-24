@@ -54,9 +54,10 @@ int  lexit();
 bool squareisalive(square_t);
 int  setsquare(square_t, bool);
 
+static int         setbuffersquare(square_t, bool);
 static int         getactiveneighbors(square_t);
 static bool        getfieldbit(struct vbit);
-/*@unused@*/static int         setfieldbit(struct vbit, bool);
+static int         setfieldbit(struct vbit, bool);
 static int         setfieldbufferbit(struct vbit, bool);
 static struct vbit squaretovbit(square_t);
 
@@ -104,7 +105,7 @@ linit(int rows, int columns) {
  */
 int
 ltick() {
-	square_t activesquare = {0, 0};
+	square_t activesquare = {-1, -1};
 	
 	if ((fieldbuffer = (struct vbyte *) calloc((size_t) vbytec, sizeof(struct vbyte))) == NULL){
 		return L_FAILURE;
@@ -112,23 +113,23 @@ ltick() {
 
 	int activeneighbors = 0;
 	
-	while(activesquare.y++ < rowc) {
+	while(++activesquare.y < rowc) {
 		activesquare.x = 0;
 
-		while(activesquare.x++ < rowc) {
+		while(++activesquare.x < columnc) {
 			activeneighbors = getactiveneighbors(activesquare);
 			if (activeneighbors < 2 || activeneighbors > 3){
-				if (setsquare(activesquare, DEAD) == L_FAILURE){
+				if (setbuffersquare(activesquare, DEAD) == L_FAILURE){
 					return L_FAILURE;	
 				}
 			}
 			else if (activeneighbors == 3){
-				if (setsquare(activesquare, ALIVE) == L_FAILURE){
+				if (setbuffersquare(activesquare, ALIVE) == L_FAILURE){
 					return L_FAILURE;		
 				}
 			}
 			else if ((squareisalive(activesquare) == ALIVE) && activeneighbors == 2){
-				if (setsquare(activesquare, ALIVE) == L_FAILURE){
+				if (setbuffersquare(activesquare, ALIVE) == L_FAILURE){
 					return L_FAILURE;
 				}
 			}
@@ -159,11 +160,16 @@ squareisalive(square_t givensquare){
 	return getfieldbit(squaretovbit(givensquare));
 }
 
+int
+setsquare(square_t sentsquare, bool value){
+		return setfieldbit((squaretovbit(sentsquare)), value); 
+}
+
 /*
  * Returns L_SUCCESS when executed successfully; L_FAILURE otherwise.
  */
 int
-setsquare(square_t sentsquare, bool value){
+setbuffersquare(square_t sentsquare, bool value){
 	return setfieldbufferbit((squaretovbit(sentsquare)), value);
 }
 

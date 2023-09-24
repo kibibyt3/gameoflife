@@ -1,8 +1,6 @@
 CC = gcc
+CFLAGS = -O0 -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion
 LDFLAGS = -lncurses
 
 default:
-	$(CC) -o gameoflife life.c io.c main.c $(LDFLAGS)
-
-debug: 
-	$(CC) -o test life.c io.c test.c $(LDFLAGS)
+	$(CC) $(CFLAGS) -o gameoflife life.c io.c main.c $(LDFLAGS)
