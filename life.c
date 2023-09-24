@@ -81,7 +81,8 @@ linit(int rows, int columns) {
 	assert(columns > 0);
 	assert((INT_MAX / columns) > rows);
 	
-
+	rowc = rows;
+	columnc = columns;
 	spacec = rowc * columnc;
   vbytec = spacec / VBYTE_SIZE;
 	if (needsevb(spacec)) {
@@ -312,8 +313,10 @@ squaretovbit(square_t sentsquare) {
   struct vbit requestedvbit;
 
 	/* Validate inputs */
-	assert(sentsquare.y >= 0 && sentsquare.y < rowc);
-	assert(sentsquare.x >= 0 && sentsquare.x < columnc);
+	assert(sentsquare.y >= 0);
+	assert(sentsquare.y < rowc);
+	assert(sentsquare.x >= 0);
+	assert(sentsquare.x < columnc);
 
 	space = (sentsquare.y * columnc) + sentsquare.x;
 
