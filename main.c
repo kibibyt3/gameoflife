@@ -16,6 +16,16 @@ int main(void){
 	cell_t   cell;
 	chtype   ch;
 	
+	/*
+	 *  .----<--------------<----------------<---------------<-----------------<---------------.
+	 *  |                                                                                      |
+	 *  '-> Get character -> pause or quit as requested .-> pass a tick -> update screen state -'
+	 *                         |                        |
+	 *                         |                        |
+	 *                         |                        '------<--------.
+	 *                         |                                        |
+	 *                         '-> get arbitrary amounts of user input -'
+	 */
 	while ((ch = getch()) != QUIT_BUTTON){
 		if (user_square.x == QUIT){
 			break;
@@ -42,6 +52,9 @@ int main(void){
 				io_game_cell_set(user_cell);
 			}
 		}
+		
+		ltick();
+		
 		for (active_square.y = 0; active_square.y < LINES; active_square.y++){
 			for (active_square.x = 0; active_square.x < COLS; active_square.x++){
 				cell.square.y = active_square.y;
@@ -50,8 +63,9 @@ int main(void){
 				io_game_cell_set(cell);
 			}
 		}
+		
 		refresh();
-		ltick();
+	
 	}
 	io_screen_end();
 	lexit();
