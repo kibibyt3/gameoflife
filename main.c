@@ -27,8 +27,8 @@ int main(void){
 			user_square = io_user_square_get(user_square.y, user_square.x);
 			if (user_square.x == PAUSE){
 				ispaused = false;
-				user_square.x = LINES / 2;
-				user_square.y = COLS / 2;
+				user_square.y = LINES / 2;
+				user_square.x = COLS / 2;
 				break;
 			}
 			if (user_square.x == QUIT){
