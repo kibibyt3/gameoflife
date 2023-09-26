@@ -15,8 +15,6 @@
 #define VBYTE_SIZE         8   /* Size of a vbyte. Struct must aggree. */
 #define NEIGHBORS_ON_GRID  8   /* Orthogonal/diagonal neighbors of square */
 
-#define DEAD  false
-#define ALIVE true
 
 /* 
  * Virtual byte to aid memory usage while sidestepping common machine

@@ -3,4 +3,4 @@ CFLAGS = -O0 -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconve
 LDFLAGS = -lncurses
 
 default:
-	$(CC) $(CFLAGS) -o gameoflife life.c io.c main.c $(LDFLAGS)
+	$(CC) $(CFLAGS) -o gameoflife life.c io.c preset.c main.c $(LDFLAGS)

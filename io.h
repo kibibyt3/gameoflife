@@ -1,7 +1,12 @@
-#define PAUSE -1
-#define QUIT  -2
-#define PAUSE_BUTTON 'p'
-#define QUIT_BUTTON 'q'
+#define IO_KEY_PAUSE 'p'
+#define IO_KEY_QUIT  'q'
+#define IO_KEY_CRAWL '.'
+
+typedef enum IOKeypress{
+	IO_KEYPRESS_PAUSE = -3, /* Must be equal to the total amount of elements * -1 */
+	IO_KEYPRESS_QUIT,
+	IO_KEYPRESS_CRAWL
+} IOKeypress;
 
 extern int      io_screen_init();         /* Initializes the I/O module */
 extern int      io_screen_end();          /* Terminates the I/O module */

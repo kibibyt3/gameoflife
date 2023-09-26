@@ -1,13 +1,15 @@
-#include <stdbool.h>
 #include <assert.h>
 #include <stddef.h>
 #include <ncurses.h>
+#include <stdbool.h>
 
 #include "life.h" /* Required for access to square_t & cell_t */
 #include "io.h"
 
-#define CHARACTER_ALIVE '@'
-#define CHARACTER_DEAD  ' '
+#define CURSOR_MOVEMENT_FACTOR   10
+#define DELAY_DS                 1
+#define CHARACTER_ALIVE         '@'
+#define CHARACTER_DEAD          ' '
 
 bool screen_isactive = false;
 
@@ -21,7 +23,7 @@ io_screen_init() {
 	/* Abort if initialization isn't successful */
 	assert(screen_isactive == false);
 	assert(initscr() != NULL);
-	assert(halfdelay(1) != ERR);
+	assert(halfdelay(DELAY_DS) != ERR);
 	assert(noecho() != ERR);
 	assert(curs_set(0) != ERR);
 	assert(keypad(stdscr, TRUE) != ERR);
@@ -46,8 +48,8 @@ io_screen_end() {
 /*
  * Acquires a square given by the user via the arrow keys or WASD. Pressing
  * enter or the spacebar causes the function to return the square the user
- * is on, or a square with its x component equal to PAUSE if the player
- * presses PAUSE_BUTTON, or QUIT if the player presses QUIT_BUTTON. May abort.
+ * is on, or a square with its x component equal to a given IOKeypress if its
+ * corresponding IO_KEY_* is pressed. May abort.
  */
 square_t
 io_user_square_get(int y, int x) {
@@ -57,12 +59,19 @@ io_user_square_get(int y, int x) {
 	assert(cbreak() != ERR);    /* Temporarily leave halfdelay mode */
 	
 	int ch;
+	bool key_special_flag = false;
+	IOKeypress key;
 
 	move(y, x);
 	while ((ch = getch()) != KEY_ENTER){
 		if (ch == ' '){break;}
-		if (ch == PAUSE_BUTTON){break;}
-		if (ch == QUIT_BUTTON){break;}
+		
+		/* Handle special keys */
+		else if (ch == IO_KEY_PAUSE){key_special_flag = true; key = IO_KEYPRESS_PAUSE; break;}
+		else if (ch == IO_KEY_QUIT) {key_special_flag = true; key = IO_KEYPRESS_QUIT;  break;}
+		else if (ch == IO_KEY_CRAWL){key_special_flag = true; key = IO_KEYPRESS_CRAWL; break;}
+		
+		/* Cursor movement by one space */
 		switch (ch) {
 		case 'w': /* FALLTHROUGH */
 		case KEY_UP:
@@ -88,20 +97,54 @@ io_user_square_get(int y, int x) {
 				x++;
 			}
 			break;
+
+	/* Cursor movement by a factor of CURSOR_MOVEMENT_FACTOR */
+		case 'h':
+			if (x >= CURSOR_MOVEMENT_FACTOR){
+				x -= CURSOR_MOVEMENT_FACTOR;
+			} else{
+				x = 0;
+			}
+			break;
+
+		case 'l':
+			if (x < COLS - CURSOR_MOVEMENT_FACTOR){
+				x += CURSOR_MOVEMENT_FACTOR;
+			} else{
+				x = COLS - 1;
+			}
+			break;
+
+		case 'k':
+			if (y >= CURSOR_MOVEMENT_FACTOR){
+				y -= CURSOR_MOVEMENT_FACTOR;
+			} else{
+				y = 0;
+			}
+			break;
+
+		case 'j':
+			if (y < LINES - CURSOR_MOVEMENT_FACTOR){
+				y += CURSOR_MOVEMENT_FACTOR;
+			} else{
+				y = LINES - 1;
+			}
+			break;
+
 		}
-		move(y, x);
+		move(y, x);	
 	}
 	square_t user_square = {y, x};
+	
 
 	/* Return to how we were before */
 	assert(curs_set(0) != ERR);
-	assert(halfdelay(1) != ERR);
+	assert(halfdelay(DELAY_DS) != ERR);
 
-	if (ch == PAUSE_BUTTON){
-		user_square.x = PAUSE;
-	} else if (ch == QUIT_BUTTON){
-		user_square.x = QUIT;
+	if (key_special_flag == true){
+		user_square.x = (int)key;
 	}
+
 	return user_square;
 }
 
