@@ -36,17 +36,16 @@ preset_set(int ch){
 void
 preset_random(int denominator){
 	square_t square_parse;
-	bool isalive;
+	bool isdead;
 
 	for(square_parse.y = 0; square_parse.y < LINES; square_parse.y++){
 		for(square_parse.x = 0; square_parse.x < COLS; square_parse.x++){
-			isalive = (bool) (rand() % denominator);
-			isalive = !isalive; /* Accounts for the fact that all non-zeros become true */
-			if (isalive) {
-				assert(setsquare(square_parse, true) != L_FAILURE);
+			isdead = (bool) (rand() % denominator);
+			if (isdead) {
+				assert(setsquare(square_parse, false) != L_FAILURE);
 			}
 			else {
-				assert(setsquare(square_parse, false) != L_FAILURE);
+				assert(setsquare(square_parse, true) != L_FAILURE);
 			}
 		}
 	}
