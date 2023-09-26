@@ -9,17 +9,22 @@
 
 #define RANDOM_DENOMINATOR 2
 
+static int preset_isinit = false;
+
 static void preset_random(int);
 static void preset_line_horizontal();
 static void preset_line_vertical();
 
 void
 preset_init(){
+	assert(preset_isinit == false);
+	preset_isinit = true;
 	srand((unsigned int) time(0));
 }
 
 void
 preset_set(int ch){
+	assert(preset_isinit == true);
 	switch (ch){
 	case 'r':
 		preset_random(RANDOM_DENOMINATOR);
@@ -35,6 +40,7 @@ preset_set(int ch){
 
 void
 preset_random(int denominator){
+	assert(preset_isinit == true);
 	square_t square_parse;
 	bool isdead;
 
@@ -53,6 +59,7 @@ preset_random(int denominator){
 
 void
 preset_line_horizontal(){
+	assert(preset_isinit == true);
 	square_t square_parse;
 	square_parse.y = LINES / 2;
 
@@ -63,6 +70,7 @@ preset_line_horizontal(){
 
 void
 preset_line_vertical(){
+	assert(preset_isinit == true);
 	square_t square_parse;
 	square_parse.x = COLS / 2;
 
