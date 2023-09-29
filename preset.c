@@ -12,8 +12,8 @@
 static int preset_isinit = false;
 
 static void preset_random(int);
-static void preset_line_horizontal();
-static void preset_line_vertical();
+static void preset_line_horizontal(void);
+static void preset_line_vertical(void);
 
 void
 preset_init(){

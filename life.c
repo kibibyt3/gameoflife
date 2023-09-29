@@ -47,8 +47,8 @@ static int rowc, columnc, spacec;
 static bool initialized = false;     
 
 int  linit(int, int);
-int  ltick();
-int  lexit();
+int  ltick(void);
+int  lexit(void);
 bool squareisalive(square_t);
 int  setsquare(square_t, bool);
 

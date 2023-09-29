@@ -6,7 +6,7 @@
 #include "io.h"
 #include "preset.h"
 
-void main_draw();
+void main_draw(void);
 
 int main(int argc, char** argv){
 	io_screen_init();

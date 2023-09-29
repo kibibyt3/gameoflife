@@ -32,7 +32,7 @@ typedef struct cell_t {
 }cell_t;
 
 extern int  linit(int, int);           /* Initializes the game */
-extern int  lexit();                   /* Exits the game */
-extern int  ltick();                   /* Causes an in-game tick to pass */
+extern int  lexit(void);        			 /* Exits the game */
+extern int  ltick(void);               /* Causes an in-game tick to pass */
 extern bool squareisalive(square_t);   /* Returns whether a square is alive */
 extern int  setsquare(square_t, bool); /* Sets an in-game square to a value */
