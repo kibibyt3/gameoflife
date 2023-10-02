@@ -7,7 +7,7 @@ objects = life.o io.o preset.o
 gameoflife: $(objects) main.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(objects): %.o: %.c %.h
+$(objects): %.o: %.c
 
 main.o: main.c
 
